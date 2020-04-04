@@ -17,20 +17,24 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:icon="@drawable/ic_home" />
+            android:icon="@drawable/ic_home"
+            android:text="@string/bills_text"/>
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:icon="@drawable/ic_restaurant" />
+            android:icon="@drawable/ic_restaurant"
+            android:text="@string/groceries_text"/>
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:icon="@drawable/ic_hospital" />
+            android:icon="@drawable/ic_hospital"
+            android:text="@string/pharmacy_text"/>
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:icon="@drawable/ic_bus" />
+            android:icon="@drawable/ic_bus"
+            android:text="@string/transport_text"/>
     </com.google.android.material.tabs.TabLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

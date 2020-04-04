@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Personal Budget</string>
+
+    <string name="bills_text">bills</string>
+    <string name="groceries_text">groceries</string>
+    <string name="pharmacy_text">pharmacy</string>
+    <string name="transport_text">transport</string>
 </resources>
