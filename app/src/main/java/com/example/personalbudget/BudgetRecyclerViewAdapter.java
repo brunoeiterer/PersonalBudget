@@ -36,7 +36,7 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         Date date = this.budgetData.getBudgetItem(position).getDate();
         BigDecimal value = this.budgetData.getBudgetItem(position).getBudgetItemValue();
         Currency currency = this.budgetData.getBudgetItem(position).getBudgetItemCurrency();
-        holder.dateTextView.setText(date.toString());
+        holder.dateTextView.setText(String.format("%td/%tm/%tY", date, date, date));
         holder.valueTextView.setText(currency.getSymbol() + ' ' + value.toString());
     }
 
