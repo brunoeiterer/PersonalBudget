@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.math.BigDecimal;
+import java.util.Currency;
 import java.util.Date;
 
 public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecyclerViewAdapter.ViewHolder> {
@@ -32,7 +34,10 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Date date = this.budgetData.getBudgetItem(position).getDate();
-        holder.textView.setText(date.toString());
+        BigDecimal value = this.budgetData.getBudgetItem(position).getBudgetItemValue();
+        Currency currency = this.budgetData.getBudgetItem(position).getBudgetItemCurrency();
+        holder.dateTextView.setText(date.toString());
+        holder.valueTextView.setText(currency.getSymbol() + ' ' + value.toString());
     }
 
     @Override
@@ -41,11 +46,13 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private TextView textView;
+        private TextView dateTextView;
+        private TextView valueTextView;
 
         ViewHolder(View itemView) {
             super(itemView);
-            this.textView = itemView.findViewById(R.id.dateTextView);
+            this.dateTextView = itemView.findViewById(R.id.dateTextView);
+            this.valueTextView = itemView.findViewById(R.id.valueTextView);
             itemView.setOnClickListener(this);
         }
 
