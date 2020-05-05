@@ -10,7 +10,6 @@ import java.util.Date;
 public class BudgetItem implements Parcelable {
     private Date budgetItemDate;
     private BigDecimal budgetItemValue;
-    private Currency budgetItemCurrency;
 
     public Date getDate() {
         return this.budgetItemDate;
@@ -29,18 +28,9 @@ public class BudgetItem implements Parcelable {
         this.budgetItemValue = newValue;
     }
 
-    public Currency getBudgetItemCurrency() {
-        return this.budgetItemCurrency;
-    }
-
-    public void setBudgetItemCurrency(Currency newCurrency) {
-        this.budgetItemCurrency = newCurrency;
-    }
-
     public BudgetItem() {
         this.setDate(new Date());
         this.setBudgetItemValue(new BigDecimal("0"));
-        this.setBudgetItemCurrency(Currency.getInstance("BRL"));
     }
 
     public BudgetItem(Parcel in) {
@@ -51,7 +41,6 @@ public class BudgetItem implements Parcelable {
         this.setBudgetItemValue(new BigDecimal(value));
 
         String currency = in.readString();
-        this.setBudgetItemCurrency(Currency.getInstance(currency));
     }
 
     @Override
@@ -63,7 +52,6 @@ public class BudgetItem implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(this.getDate().getTime());
         dest.writeString(this.getBudgetItemValue().toString());
-        dest.writeString(this.getBudgetItemCurrency().toString());
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {

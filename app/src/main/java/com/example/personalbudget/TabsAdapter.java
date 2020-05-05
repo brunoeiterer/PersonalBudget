@@ -41,14 +41,13 @@ public class TabsAdapter extends FragmentStatePagerAdapter {
 
     private BudgetData getFragmentContent(int position) {
         BudgetData fragmentContent = new BudgetData();
+        fragmentContent.setBudgetDataCurrency(Currency.getInstance("BRL"));
 
         BudgetItem firstItem = new BudgetItem();
-        firstItem.setBudgetItemCurrency(Currency.getInstance("BRL"));
         firstItem.setBudgetItemValue(BigDecimal.valueOf(100));
         firstItem.setDate(new Date());
 
         BudgetItem secondItem = new BudgetItem();
-        secondItem.setBudgetItemCurrency(Currency.getInstance("BRL"));
         secondItem.setBudgetItemValue(BigDecimal.valueOf(72.50));
         secondItem.setDate(new Date());
 

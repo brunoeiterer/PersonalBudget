@@ -12,8 +12,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.NumberFormat;
-
 public class BudgetFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle savedInstanceState) {
@@ -26,7 +24,7 @@ public class BudgetFragment extends Fragment {
         budgetRecyclerView.setAdapter(budgetRecyclerViewAdapter);
 
         TextView totalValueTextView = view.findViewById(R.id.totalValueTextView);
-        totalValueTextView.setText("Total: " + budgetData.getBudgetItem(0).getBudgetItemCurrency().getSymbol() + ' ' +
+        totalValueTextView.setText("Total: " + budgetData.getBudgetDataCurrency().getSymbol() + ' ' +
                 budgetData.getTotalValue().setScale(2).toPlainString());
         return view;
     }

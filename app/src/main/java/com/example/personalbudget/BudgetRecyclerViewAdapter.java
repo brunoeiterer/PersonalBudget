@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,7 +34,7 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
     public void onBindViewHolder(ViewHolder holder, int position) {
         Date date = this.budgetData.getBudgetItem(position).getDate();
         BigDecimal value = this.budgetData.getBudgetItem(position).getBudgetItemValue();
-        Currency currency = this.budgetData.getBudgetItem(position).getBudgetItemCurrency();
+        Currency currency = this.budgetData.getBudgetDataCurrency();
         holder.dateTextView.setText(String.format("%td/%tm/%tY", date, date, date));
         holder.valueTextView.setText(currency.getSymbol() + ' ' + value.toString());
     }

@@ -5,13 +5,16 @@ import android.os.Parcelable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Currency;
 
 public class BudgetData implements Parcelable {
     private ArrayList<BudgetItem> budgetItemList;
+    private Currency budgetDataCurrency;
 
-    public BudgetData(ArrayList<BudgetItem> newBudgetItemList) {
+    public BudgetData(ArrayList<BudgetItem> newBudgetItemList, Currency currency) {
         this.budgetItemList = new ArrayList<>();
         this.budgetItemList.addAll(newBudgetItemList);
+        this.budgetDataCurrency = currency;
     }
 
     public BudgetData() {
@@ -63,6 +66,14 @@ public class BudgetData implements Parcelable {
         }
 
         return totalValue;
+    }
+
+    public Currency getBudgetDataCurrency() {
+        return this.budgetDataCurrency;
+    }
+
+    public void setBudgetDataCurrency(Currency currency) {
+        this.budgetDataCurrency = currency;
     }
 
     public int getSize() {
