@@ -7,9 +7,6 @@ import android.os.Bundle;
 
 import com.google.android.material.tabs.TabLayout;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -19,13 +16,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         TabLayout tabLayout = (TabLayout)findViewById(R.id.tabLayout);
-        ArrayList<String> tabTextList = new ArrayList<String>();
 
-        for(int i = 0; i < tabLayout.getTabCount(); i++){
-            tabTextList.add(tabLayout.getTabAt(i).getText().toString());
-        }
-
-        TabsAdapter tabsAdapter = new TabsAdapter(getSupportFragmentManager(), tabLayout.getTabCount(), tabTextList);
+        TabsAdapter tabsAdapter = new TabsAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
         final ViewPager viewPager = (ViewPager)findViewById(R.id.viewPager);
         viewPager.setAdapter(tabsAdapter);
