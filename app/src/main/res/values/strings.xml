@@ -5,4 +5,6 @@
     <string name="groceries_text">groceries</string>
     <string name="pharmacy_text">pharmacy</string>
     <string name="transport_text">transport</string>
+    <string name="add_budget_item_window_date">date</string>
+    <string name="add_budget_item_window_value">value</string>
 </resources>
