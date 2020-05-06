@@ -43,6 +43,11 @@ public class BudgetItem implements Parcelable {
         String currency = in.readString();
     }
 
+    public BudgetItem(Date date, BigDecimal value) {
+        this.setDate(date);
+        this.setBudgetItemValue(value);
+    }
+
     @Override
     public int describeContents() {
         return 0;
