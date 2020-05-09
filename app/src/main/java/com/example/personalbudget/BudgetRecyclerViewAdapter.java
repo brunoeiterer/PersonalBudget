@@ -44,6 +44,10 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         return budgetData.getSize();
     }
 
+    public void addBudgetItem(BudgetItem budgetItem) {
+        this.budgetData.addBudgetItem(budgetItem);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView dateTextView;
         private TextView valueTextView;

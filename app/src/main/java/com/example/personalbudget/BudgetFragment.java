@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.os.Bundle;
 
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -18,6 +20,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 public class BudgetFragment extends Fragment {
     @Override
     public View onCreateView(final LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle savedInstanceState) {
@@ -25,7 +30,7 @@ public class BudgetFragment extends Fragment {
         BudgetData budgetData = (BudgetData) getArguments().getParcelable("budgetContent");
         RecyclerView budgetRecyclerView = view.findViewById(R.id.budgetRecyclerView);
         budgetRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        BudgetRecyclerViewAdapter budgetRecyclerViewAdapter =
+        final BudgetRecyclerViewAdapter budgetRecyclerViewAdapter =
                 new BudgetRecyclerViewAdapter(getActivity(), budgetData);
         budgetRecyclerView.setAdapter(budgetRecyclerViewAdapter);
 
@@ -34,11 +39,11 @@ public class BudgetFragment extends Fragment {
                 budgetData.getTotalValue().setScale(2).toPlainString());
 
         /* set add button callback */
-        FloatingActionButton addBudgetItemButton = view.findViewById(R.id.AddBudgetItemButton);
+        final FloatingActionButton addBudgetItemButton = view.findViewById(R.id.AddBudgetItemButton);
         addBudgetItemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                View popupView = layoutInflater.inflate(R.layout.add_budget_item_window, null);
+                final View popupView = layoutInflater.inflate(R.layout.add_budget_item_window, null);
                 int width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
                 int height = ConstraintLayout.LayoutParams.WRAP_CONTENT;
                 boolean focusable = true;
@@ -48,16 +53,35 @@ public class BudgetFragment extends Fragment {
 
                 popupView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
-                    public boolean onTouch(View v, MotionEvent event) {
+                    public boolean onTouch(View view, MotionEvent event) {
                         popupWindow.dismiss();
                         return true;
+                    }
+                });
+
+                Button doneButton = popupView.findViewById(R.id.addBudgetItemWindowDoneButton);
+                doneButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        EditText dateEditText = popupView.findViewById(R.id.addBudgetItemWindowDateEditText);
+                        Date date = new Date(dateEditText.getText().toString());
+
+                        EditText valueEditText = popupView.findViewById(R.id.addBudgetItemWindowValueEditText);
+                        BigDecimal value = new BigDecimal(valueEditText.getText().toString());
+
+                        addBudgetItem(date, value, budgetRecyclerViewAdapter);
                     }
                 });
             }
         });
 
-
         return view;
+    }
+
+    private void addBudgetItem(Date date, BigDecimal value, BudgetRecyclerViewAdapter budgetRecyclerViewAdapter) {
+        BudgetItem budgetItem = new BudgetItem(date, value);
+        budgetRecyclerViewAdapter.addBudgetItem(budgetItem);
+        budgetRecyclerViewAdapter.notifyDataSetChanged();
     }
 
 
