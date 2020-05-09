@@ -1,5 +1,8 @@
 package com.example.personalbudget;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -8,6 +11,7 @@ import android.view.ViewGroup;
 import android.os.Bundle;
 
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
@@ -43,13 +47,24 @@ public class BudgetFragment extends Fragment {
         addBudgetItemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                /* show popup window */
                 final View popupView = layoutInflater.inflate(R.layout.add_budget_item_window, null);
                 int width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
                 int height = ConstraintLayout.LayoutParams.WRAP_CONTENT;
                 boolean focusable = true;
                 final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+                popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 
                 popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+                View container = popupWindow.getContentView().getRootView();
+                Context context = popupWindow.getContentView().getContext();
+                WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+                WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) container.getLayoutParams();
+                layoutParams.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+                layoutParams.dimAmount = 0.5f;
+                windowManager.updateViewLayout(container, layoutParams);
 
                 popupView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
