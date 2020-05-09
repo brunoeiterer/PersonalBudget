@@ -72,6 +72,14 @@ public class BudgetFragment extends Fragment {
                         addBudgetItem(date, value, budgetRecyclerViewAdapter);
                     }
                 });
+
+                Button cancelButton = popupView.findViewById(R.id.addBudgetItemWindowCancelButton);
+                cancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        popupWindow.dismiss();
+                    }
+                });
             }
         });
 
