@@ -1,6 +1,7 @@
 package com.example.personalbudget;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +18,13 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
     private LayoutInflater layoutInflater;
     private ItemClickListener clickListener;
     private Context context;
+    private int selectedPosition;
 
     BudgetRecyclerViewAdapter(Context context, BudgetData budgetData) {
         this.context = context;
         this.layoutInflater = LayoutInflater.from(this.context);
         this.budgetData = budgetData;
+        this.selectedPosition = RecyclerView.NO_POSITION;
     }
 
     @Override
@@ -37,6 +40,15 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         Currency currency = this.budgetData.getBudgetDataCurrency();
         holder.dateTextView.setText(String.format("%td/%tm/%tY", date, date, date));
         holder.valueTextView.setText(currency.getSymbol() + ' ' + value.toString());
+
+        if(selectedPosition == position) {
+            holder.itemView.setSelected(true);
+            holder.itemView.setBackgroundColor(Color.GRAY);
+        }
+        else {
+            holder.itemView.setSelected(false);
+            holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+        }
     }
 
     @Override
@@ -63,6 +75,16 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         public void onClick(View view) {
             if (clickListener != null) {
                 clickListener.onItemClick(view, getAdapterPosition());
+            }
+
+            if (selectedPosition == getAdapterPosition()) {
+                selectedPosition = RecyclerView.NO_POSITION;
+                notifyDataSetChanged();
+            }
+            else {
+                notifyItemChanged(selectedPosition);
+                selectedPosition = getLayoutPosition();
+                notifyItemChanged(selectedPosition);
             }
         }
     }
