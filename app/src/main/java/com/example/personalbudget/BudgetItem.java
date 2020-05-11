@@ -4,19 +4,19 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.math.BigDecimal;
-import java.util.Currency;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class BudgetItem implements Parcelable {
-    private Date budgetItemDate;
+    private LocalDate budgetItemDate;
     private BigDecimal budgetItemValue;
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return this.budgetItemDate;
     }
 
 
-    public void setDate(Date newDate) {
+    public void setDate(LocalDate newDate) {
         this.budgetItemDate = newDate;
     }
 
@@ -29,21 +29,20 @@ public class BudgetItem implements Parcelable {
     }
 
     public BudgetItem() {
-        this.setDate(new Date());
+        this.setDate(LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth()));
         this.setBudgetItemValue(new BigDecimal("0"));
     }
 
     public BudgetItem(Parcel in) {
-        long date = in.readLong();
-        this.setDate(new Date(date));
+        String dateString = in.readString();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        this.setDate(LocalDate.parse(dateString, formatter));
 
         String value = in.readString();
         this.setBudgetItemValue(new BigDecimal(value));
-
-        String currency = in.readString();
     }
 
-    public BudgetItem(Date date, BigDecimal value) {
+    public BudgetItem(LocalDate date, BigDecimal value) {
         this.setDate(date);
         this.setBudgetItemValue(value);
     }
@@ -55,7 +54,8 @@ public class BudgetItem implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(this.getDate().getTime());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        dest.writeString(this.getDate().format(formatter));
         dest.writeString(this.getBudgetItemValue().toString());
     }
 

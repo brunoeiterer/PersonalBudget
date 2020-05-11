@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Currency;
-import java.util.Date;
 
 public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecyclerViewAdapter.ViewHolder> {
     private BudgetData budgetData;
@@ -38,7 +38,7 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Date date = this.budgetData.getBudgetItem(position).getDate();
+        LocalDate date = this.budgetData.getBudgetItem(position).getDate();
         BigDecimal value = this.budgetData.getBudgetItem(position).getBudgetItemValue();
         Currency currency = this.budgetData.getBudgetDataCurrency();
         holder.dateTextView.setText(String.format("%td/%tm/%tY", date, date, date));

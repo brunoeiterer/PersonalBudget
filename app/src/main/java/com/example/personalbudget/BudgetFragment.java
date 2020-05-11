@@ -25,7 +25,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class BudgetFragment extends Fragment {
     @Override
@@ -79,7 +80,8 @@ public class BudgetFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         EditText dateEditText = popupView.findViewById(R.id.addBudgetItemWindowDateEditText);
-                        Date date = new Date(dateEditText.getText().toString());
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                        LocalDate date = LocalDate.parse(dateEditText.getText(), formatter);
 
                         EditText valueEditText = popupView.findViewById(R.id.addBudgetItemWindowValueEditText);
                         BigDecimal value = new BigDecimal(valueEditText.getText().toString());
@@ -101,7 +103,7 @@ public class BudgetFragment extends Fragment {
         return view;
     }
 
-    private void addBudgetItem(Date date, BigDecimal value, BudgetRecyclerViewAdapter budgetRecyclerViewAdapter) {
+    private void addBudgetItem(LocalDate date, BigDecimal value, BudgetRecyclerViewAdapter budgetRecyclerViewAdapter) {
         BudgetItem budgetItem = new BudgetItem(date, value);
         budgetRecyclerViewAdapter.addBudgetItem(budgetItem);
         budgetRecyclerViewAdapter.notifyDataSetChanged();
