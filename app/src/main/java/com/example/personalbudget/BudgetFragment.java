@@ -87,6 +87,8 @@ public class BudgetFragment extends Fragment {
                         BigDecimal value = new BigDecimal(valueEditText.getText().toString());
 
                         addBudgetItem(date, value, budgetRecyclerViewAdapter);
+
+                        popupWindow.dismiss();
                     }
                 });
 
