@@ -1,5 +1,6 @@
 package com.example.personalbudget;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -8,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.math.BigDecimal;
 import java.util.Currency;
@@ -60,6 +63,10 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         this.budgetData.addBudgetItem(budgetItem);
     }
 
+    public void removeBudgetItem(BudgetItem budgetItem) {
+        this.budgetData.removeBudgetItem(budgetItem);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView dateTextView;
         private TextView valueTextView;
@@ -73,6 +80,8 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
 
         @Override
         public void onClick(View view) {
+            FloatingActionButton removeButton = ((Activity)context).findViewById(R.id.RemoveBudgetItemButton);
+
             if (clickListener != null) {
                 clickListener.onItemClick(view, getAdapterPosition());
             }
@@ -80,11 +89,26 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
             if (selectedPosition == getAdapterPosition()) {
                 selectedPosition = RecyclerView.NO_POSITION;
                 notifyDataSetChanged();
+                removeButton.setVisibility(FloatingActionButton.INVISIBLE);
+                removeButton.setClickable(false);
             }
             else {
                 notifyItemChanged(selectedPosition);
                 selectedPosition = getLayoutPosition();
                 notifyItemChanged(selectedPosition);
+                removeButton.setVisibility(FloatingActionButton.VISIBLE);
+                removeButton.setClickable(true);
+
+                if(removeButton.hasOnClickListeners() == false) {
+                    removeButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            BudgetItem budgetItem = BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(selectedPosition);
+                            BudgetRecyclerViewAdapter.this.removeBudgetItem(budgetItem);
+                            notifyDataSetChanged();
+                        }
+                    });
+                }
             }
         }
     }

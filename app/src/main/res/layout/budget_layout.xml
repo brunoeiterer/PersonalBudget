@@ -32,4 +32,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_input_add" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/RemoveBudgetItemButton"
+        app:srcCompat="@drawable/ic_trash_can"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/AddBudgetItemButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
