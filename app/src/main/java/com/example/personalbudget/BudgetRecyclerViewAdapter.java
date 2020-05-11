@@ -27,6 +27,7 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         this.context = context;
         this.layoutInflater = LayoutInflater.from(this.context);
         this.budgetData = budgetData;
+        this.budgetData.sortByDate();
         this.selectedPosition = RecyclerView.NO_POSITION;
     }
 
@@ -61,10 +62,12 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
 
     public void addBudgetItem(BudgetItem budgetItem) {
         this.budgetData.addBudgetItem(budgetItem);
+        this.budgetData.sortByDate();
     }
 
     public void removeBudgetItem(BudgetItem budgetItem) {
         this.budgetData.removeBudgetItem(budgetItem);
+        this.budgetData.sortByDate();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

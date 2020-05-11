@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Currency;
 
 public class BudgetData implements Parcelable {
@@ -78,5 +79,9 @@ public class BudgetData implements Parcelable {
 
     public int getSize() {
         return this.budgetItemList.size();
+    }
+
+    public void sortByDate() {
+        this.budgetItemList.sort(Comparator.comparing(BudgetItem::getDate));
     }
 }
