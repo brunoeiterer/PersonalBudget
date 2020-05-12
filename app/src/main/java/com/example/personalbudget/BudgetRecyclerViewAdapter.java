@@ -3,17 +3,26 @@ package com.example.personalbudget;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Currency;
 
 public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecyclerViewAdapter.ViewHolder> {
@@ -84,6 +93,7 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         @Override
         public void onClick(View view) {
             FloatingActionButton removeButton = ((Activity)context).findViewById(R.id.RemoveBudgetItemButton);
+            FloatingActionButton editButton = ((Activity)context).findViewById(R.id.EditBudgetItemButton);
 
             if (clickListener != null) {
                 clickListener.onItemClick(view, getAdapterPosition());
@@ -94,6 +104,8 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
                 notifyDataSetChanged();
                 removeButton.setVisibility(FloatingActionButton.INVISIBLE);
                 removeButton.setClickable(false);
+                editButton.setVisibility(FloatingActionButton.INVISIBLE);
+                editButton.setClickable(false);
             }
             else {
                 notifyItemChanged(selectedPosition);
@@ -109,6 +121,77 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
                             BudgetItem budgetItem = BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(selectedPosition);
                             BudgetRecyclerViewAdapter.this.removeBudgetItem(budgetItem);
                             notifyDataSetChanged();
+                        }
+                    });
+                }
+
+                editButton.setVisibility(FloatingActionButton.VISIBLE);
+                editButton.setClickable(true);
+
+                if(editButton.hasOnClickListeners() == false) {
+                    editButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            /* show popup window */
+                            final View popupView = layoutInflater.inflate(R.layout.add_budget_item_window, null);
+                            int width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+                            int height = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+                            final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
+                            popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+
+                            popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+                            View container = popupWindow.getContentView().getRootView();
+                            Context context = popupWindow.getContentView().getContext();
+                            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+                            WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) container.getLayoutParams();
+                            layoutParams.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+                            layoutParams.dimAmount = 0.5f;
+                            windowManager.updateViewLayout(container, layoutParams);
+
+                            /* dismiss if user touches outside of the window */
+                            popupView.setOnTouchListener(new View.OnTouchListener() {
+                                @Override
+                                public boolean onTouch(View view, MotionEvent event) {
+                                    popupWindow.dismiss();
+                                    return true;
+                                }
+                            });
+
+                            EditText dateEditText = popupView.findViewById(R.id.addBudgetItemWindowDateEditText);
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                            dateEditText.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
+                                    BudgetRecyclerViewAdapter.this.selectedPosition).getDate().format(formatter));
+
+                            EditText valueEditText = popupView.findViewById(R.id.addBudgetItemWindowValueEditText);
+                            valueEditText.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
+                                    BudgetRecyclerViewAdapter.this.selectedPosition).getBudgetItemValue().toString());
+
+                            Button doneButton = popupView.findViewById(R.id.addBudgetItemWindowDoneButton);
+                            doneButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    LocalDate date = LocalDate.parse(dateEditText.getText(), formatter);
+                                    BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
+                                            BudgetRecyclerViewAdapter.this.selectedPosition).setDate(date);
+
+                                    BigDecimal value = new BigDecimal(valueEditText.getText().toString());
+                                    BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
+                                            BudgetRecyclerViewAdapter.this.selectedPosition).setBudgetItemValue(value);
+
+                                    BudgetRecyclerViewAdapter.this.notifyDataSetChanged();
+
+                                    popupWindow.dismiss();
+                                }
+                            });
+
+                            Button cancelButton = popupView.findViewById(R.id.addBudgetItemWindowCancelButton);
+                            cancelButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    popupWindow.dismiss();
+                                }
+                            });
                         }
                     });
                 }
