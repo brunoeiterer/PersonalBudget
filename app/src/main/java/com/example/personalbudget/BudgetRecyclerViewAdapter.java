@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Currency;
@@ -51,8 +52,12 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         LocalDate date = this.budgetData.getBudgetItem(position).getDate();
         BigDecimal value = this.budgetData.getBudgetItem(position).getBudgetItemValue();
         Currency currency = this.budgetData.getBudgetDataCurrency();
+        DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setMinimumFractionDigits(2);
+        decimalFormat.setMaximumFractionDigits(2);
+        decimalFormat.setGroupingUsed(false);
         holder.dateTextView.setText(String.format("%td/%tm/%tY", date, date, date));
-        holder.valueTextView.setText(currency.getSymbol() + ' ' + value.toString());
+        holder.valueTextView.setText(currency.getSymbol() + ' ' + decimalFormat.format(value));
 
         if(selectedPosition == position) {
             holder.itemView.setSelected(true);
