@@ -77,11 +77,27 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
     public void addBudgetItem(BudgetItem budgetItem) {
         this.budgetData.addBudgetItem(budgetItem);
         this.budgetData.sortByDate();
+
+        TextView totalValueTextView = ((Activity) this.context).findViewById(R.id.totalValueTextView);
+        DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setMinimumFractionDigits(2);
+        decimalFormat.setMaximumFractionDigits(2);
+        decimalFormat.setGroupingUsed(false);
+        totalValueTextView.setText(this.budgetData.getBudgetDataCurrency().getSymbol() + ' ' +
+                decimalFormat.format(this.budgetData.getTotalValue()));
     }
 
     public void removeBudgetItem(BudgetItem budgetItem) {
         this.budgetData.removeBudgetItem(budgetItem);
         this.budgetData.sortByDate();
+
+        TextView totalValueTextView = ((Activity) this.context).findViewById(R.id.totalValueTextView);
+        DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setMinimumFractionDigits(2);
+        decimalFormat.setMaximumFractionDigits(2);
+        decimalFormat.setGroupingUsed(false);
+        totalValueTextView.setText(this.budgetData.getBudgetDataCurrency().getSymbol() + ' ' +
+                decimalFormat.format(this.budgetData.getTotalValue()));
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -185,6 +201,15 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
                                             BudgetRecyclerViewAdapter.this.selectedPosition).setBudgetItemValue(value);
 
                                     BudgetRecyclerViewAdapter.this.notifyDataSetChanged();
+
+                                    TextView totalValueTextView = ((Activity) BudgetRecyclerViewAdapter.this.context).
+                                            findViewById(R.id.totalValueTextView);
+                                    DecimalFormat decimalFormat = new DecimalFormat();
+                                    decimalFormat.setMinimumFractionDigits(2);
+                                    decimalFormat.setMaximumFractionDigits(2);
+                                    decimalFormat.setGroupingUsed(false);
+                                    totalValueTextView.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetDataCurrency().getSymbol() +
+                                            ' ' + decimalFormat.format(BudgetRecyclerViewAdapter.this.budgetData.getTotalValue()));
 
                                     popupWindow.dismiss();
                                 }
