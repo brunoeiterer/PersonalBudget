@@ -3,12 +3,13 @@ package com.example.personalbudget;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Currency;
 
-public class BudgetData implements Parcelable {
+public class BudgetData implements Parcelable, Serializable {
     private ArrayList<BudgetItem> budgetItemList;
     private Currency budgetDataCurrency;
 
@@ -20,6 +21,7 @@ public class BudgetData implements Parcelable {
 
     public BudgetData() {
         this.budgetItemList = new ArrayList<>();
+        this.budgetDataCurrency = Currency.getInstance("BRL");
     }
 
     public BudgetData(Parcel in) {

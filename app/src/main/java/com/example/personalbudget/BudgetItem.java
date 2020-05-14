@@ -3,11 +3,12 @@ package com.example.personalbudget;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-public class BudgetItem implements Parcelable {
+public class BudgetItem implements Parcelable, Serializable {
     private LocalDate budgetItemDate;
     private BigDecimal budgetItemValue;
 

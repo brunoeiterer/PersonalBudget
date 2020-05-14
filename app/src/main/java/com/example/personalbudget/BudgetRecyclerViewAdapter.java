@@ -19,7 +19,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -85,6 +87,16 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         decimalFormat.setGroupingUsed(false);
         totalValueTextView.setText(this.budgetData.getBudgetDataCurrency().getSymbol() + ' ' +
                 decimalFormat.format(this.budgetData.getTotalValue()));
+
+        TabLayout tabLayout = ((Activity) this.context).findViewById(R.id.tabLayout);
+        TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
+        try{
+            BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(), this.budgetData);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void removeBudgetItem(BudgetItem budgetItem) {
@@ -98,6 +110,15 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         decimalFormat.setGroupingUsed(false);
         totalValueTextView.setText(this.budgetData.getBudgetDataCurrency().getSymbol() + ' ' +
                 decimalFormat.format(this.budgetData.getTotalValue()));
+
+        TabLayout tabLayout = ((Activity) this.context).findViewById(R.id.tabLayout);
+        TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
+        try{
+            BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(), this.budgetData);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -210,6 +231,16 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
                                     decimalFormat.setGroupingUsed(false);
                                     totalValueTextView.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetDataCurrency().getSymbol() +
                                             ' ' + decimalFormat.format(BudgetRecyclerViewAdapter.this.budgetData.getTotalValue()));
+
+                                    TabLayout tabLayout = ((Activity) BudgetRecyclerViewAdapter.this.context).findViewById(R.id.tabLayout);
+                                    TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
+                                    try{
+                                        BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(),
+                                                BudgetRecyclerViewAdapter.this.budgetData);
+                                    }
+                                    catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
 
                                     popupWindow.dismiss();
                                 }

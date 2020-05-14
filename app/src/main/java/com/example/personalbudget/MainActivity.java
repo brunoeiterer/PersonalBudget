@@ -7,6 +7,8 @@ import android.os.Bundle;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -17,7 +19,14 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout)findViewById(R.id.tabLayout);
 
-        TabsAdapter tabsAdapter = new TabsAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        ArrayList<String> tabNames = new ArrayList<>();
+        for(int i = 0; i < tabLayout.getTabCount(); i++) {
+            tabNames.add(tabLayout.getTabAt(i).getText().toString());
+        }
+
+        BudgetDataFileHandler.InitializeBudgetDataFileHandler(tabNames, this);
+
+        TabsAdapter tabsAdapter = new TabsAdapter(getSupportFragmentManager(), tabLayout.getTabCount(), this);
 
         final ViewPager viewPager = (ViewPager)findViewById(R.id.viewPager);
         viewPager.setAdapter(tabsAdapter);
