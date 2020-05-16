@@ -2,7 +2,9 @@ package com.example.personalbudget;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -16,6 +18,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -32,12 +35,12 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
     private BudgetData budgetData;
     private LayoutInflater layoutInflater;
     private ItemClickListener clickListener;
-    private Context context;
+    private Fragment fragment;
     private int selectedPosition;
 
-    BudgetRecyclerViewAdapter(Context context, BudgetData budgetData) {
-        this.context = context;
-        this.layoutInflater = LayoutInflater.from(this.context);
+    BudgetRecyclerViewAdapter(Fragment fragment, BudgetData budgetData) {
+        this.fragment = fragment;
+        this.layoutInflater = LayoutInflater.from(this.fragment.getActivity());
         this.budgetData = budgetData;
         this.budgetData.sortByDate();
         this.selectedPosition = RecyclerView.NO_POSITION;
@@ -80,7 +83,7 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         this.budgetData.addBudgetItem(budgetItem);
         this.budgetData.sortByDate();
 
-        TextView totalValueTextView = ((Activity) this.context).findViewById(R.id.totalValueTextView);
+        TextView totalValueTextView = this.fragment.getView().findViewById(R.id.totalValueTextView);
         DecimalFormat decimalFormat = new DecimalFormat();
         decimalFormat.setMinimumFractionDigits(2);
         decimalFormat.setMaximumFractionDigits(2);
@@ -88,7 +91,7 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         totalValueTextView.setText(this.budgetData.getBudgetDataCurrency().getSymbol() + ' ' +
                 decimalFormat.format(this.budgetData.getTotalValue()));
 
-        TabLayout tabLayout = ((Activity) this.context).findViewById(R.id.tabLayout);
+        TabLayout tabLayout = this.fragment.getView().findViewById(R.id.tabLayout);
         TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
         try{
             BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(), this.budgetData);
@@ -103,7 +106,7 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         this.budgetData.removeBudgetItem(budgetItem);
         this.budgetData.sortByDate();
 
-        TextView totalValueTextView = ((Activity) this.context).findViewById(R.id.totalValueTextView);
+        TextView totalValueTextView = this.fragment.getView().findViewById(R.id.totalValueTextView);
         DecimalFormat decimalFormat = new DecimalFormat();
         decimalFormat.setMinimumFractionDigits(2);
         decimalFormat.setMaximumFractionDigits(2);
@@ -111,7 +114,7 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         totalValueTextView.setText(this.budgetData.getBudgetDataCurrency().getSymbol() + ' ' +
                 decimalFormat.format(this.budgetData.getTotalValue()));
 
-        TabLayout tabLayout = ((Activity) this.context).findViewById(R.id.tabLayout);
+        TabLayout tabLayout = this.fragment.getView().findViewById(R.id.tabLayout);
         TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
         try{
             BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(), this.budgetData);
@@ -124,8 +127,8 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
     public void UnselectItem() {
         this.selectedPosition = RecyclerView.NO_POSITION;
 
-        final FloatingActionButton removeButton = ((Activity)context).findViewById(R.id.RemoveBudgetItemButton);
-        final FloatingActionButton editButton = ((Activity)context).findViewById(R.id.EditBudgetItemButton);
+        final FloatingActionButton removeButton = this.fragment.getView().findViewById(R.id.RemoveBudgetItemButton);
+        final FloatingActionButton editButton = this.fragment.getView().findViewById(R.id.EditBudgetItemButton);
         notifyDataSetChanged();
         removeButton.setVisibility(FloatingActionButton.INVISIBLE);
         removeButton.setClickable(false);
@@ -146,8 +149,8 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
 
         @Override
         public void onClick(View view) {
-            final FloatingActionButton removeButton = ((Activity)context).findViewById(R.id.RemoveBudgetItemButton);
-            final FloatingActionButton editButton = ((Activity)context).findViewById(R.id.EditBudgetItemButton);
+            final FloatingActionButton removeButton = BudgetRecyclerViewAdapter.this.fragment.getView().findViewById(R.id.RemoveBudgetItemButton);
+            final FloatingActionButton editButton = BudgetRecyclerViewAdapter.this.fragment.getView().findViewById(R.id.EditBudgetItemButton);
 
             if (clickListener != null) {
                 clickListener.onItemClick(view, getAdapterPosition());
@@ -168,6 +171,13 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
                 removeButton.setVisibility(FloatingActionButton.VISIBLE);
                 removeButton.setClickable(true);
 
+                final FloatingActionButton addBudgetItemButton = BudgetRecyclerViewAdapter.this.fragment.getView().findViewById(R.id.AddBudgetItemButton);
+
+                final Rect actualPosition = new Rect();
+                addBudgetItemButton.getGlobalVisibleRect(actualPosition);
+                final Rect screen = new Rect(0, 0, Resources.getSystem().getDisplayMetrics().widthPixels, Resources.getSystem().getDisplayMetrics().heightPixels);
+                Boolean visible = actualPosition.intersect(screen);
+
                 if(removeButton.hasOnClickListeners() == false) {
                     removeButton.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -181,6 +191,9 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
 
                 editButton.setVisibility(FloatingActionButton.VISIBLE);
                 editButton.setClickable(true);
+
+//                editButton.show();
+//                editButton.invalidate();
 
                 if(editButton.hasOnClickListeners() == false) {
                     editButton.setOnClickListener(new View.OnClickListener() {
@@ -235,7 +248,7 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
 
                                     BudgetRecyclerViewAdapter.this.notifyDataSetChanged();
 
-                                    TextView totalValueTextView = ((Activity) BudgetRecyclerViewAdapter.this.context).
+                                    TextView totalValueTextView = BudgetRecyclerViewAdapter.this.fragment.getView().
                                             findViewById(R.id.totalValueTextView);
                                     DecimalFormat decimalFormat = new DecimalFormat();
                                     decimalFormat.setMinimumFractionDigits(2);
@@ -244,7 +257,7 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
                                     totalValueTextView.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetDataCurrency().getSymbol() +
                                             ' ' + decimalFormat.format(BudgetRecyclerViewAdapter.this.budgetData.getTotalValue()));
 
-                                    TabLayout tabLayout = ((Activity) BudgetRecyclerViewAdapter.this.context).findViewById(R.id.tabLayout);
+                                    TabLayout tabLayout = BudgetRecyclerViewAdapter.this.fragment.getActivity().findViewById(R.id.tabLayout);
                                     TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
                                     try{
                                         BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(),

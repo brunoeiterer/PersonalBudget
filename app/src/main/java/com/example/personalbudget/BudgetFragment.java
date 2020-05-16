@@ -36,7 +36,7 @@ public class BudgetFragment extends Fragment {
         RecyclerView budgetRecyclerView = view.findViewById(R.id.budgetRecyclerView);
         budgetRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         final BudgetRecyclerViewAdapter budgetRecyclerViewAdapter =
-                new BudgetRecyclerViewAdapter(getActivity(), budgetData);
+                new BudgetRecyclerViewAdapter(this, budgetData);
         budgetRecyclerView.setAdapter(budgetRecyclerViewAdapter);
 
         TextView totalValueTextView = view.findViewById(R.id.totalValueTextView);
