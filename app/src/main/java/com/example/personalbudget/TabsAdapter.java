@@ -11,10 +11,12 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class TabsAdapter extends FragmentStatePagerAdapter {
     private int numberOfTabs;
     private Context activityContext;
+    private ArrayList<BudgetFragment> fragmentsList;
 
     public TabsAdapter(FragmentManager fragmentManager, int newNumberOfTabs, Context activityContext) {
         super(fragmentManager);
@@ -22,6 +24,16 @@ public class TabsAdapter extends FragmentStatePagerAdapter {
         this.activityContext = activityContext;
 
         this.numberOfTabs = newNumberOfTabs;
+
+        this.fragmentsList = new ArrayList<>();
+        for(int i = 0; i < this.numberOfTabs; i++) {
+            BudgetFragment budgetFragment = new BudgetFragment();
+            BudgetData budgetData = getFragmentContent(i);
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("budgetContent", budgetData);
+            budgetFragment.setArguments(bundle);
+            this.fragmentsList.add(budgetFragment);
+        }
     }
 
     @Override
@@ -31,15 +43,7 @@ public class TabsAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        switch(position) {
-            default:
-                BudgetFragment bills = new BudgetFragment();
-                BudgetData budgetData = getFragmentContent(position);
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("budgetContent", budgetData);
-                bills.setArguments(bundle);
-                return bills;
-        }
+        return this.fragmentsList.get(position);
     }
 
     private BudgetData getFragmentContent(int position) {
