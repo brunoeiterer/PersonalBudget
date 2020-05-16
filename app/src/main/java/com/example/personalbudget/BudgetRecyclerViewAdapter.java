@@ -121,6 +121,18 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         }
     }
 
+    public void UnselectItem() {
+        this.selectedPosition = RecyclerView.NO_POSITION;
+
+        final FloatingActionButton removeButton = ((Activity)context).findViewById(R.id.RemoveBudgetItemButton);
+        final FloatingActionButton editButton = ((Activity)context).findViewById(R.id.EditBudgetItemButton);
+        notifyDataSetChanged();
+        removeButton.setVisibility(FloatingActionButton.INVISIBLE);
+        removeButton.setClickable(false);
+        editButton.setVisibility(FloatingActionButton.INVISIBLE);
+        editButton.setClickable(false);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView dateTextView;
         private TextView valueTextView;
@@ -134,8 +146,8 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
 
         @Override
         public void onClick(View view) {
-            FloatingActionButton removeButton = ((Activity)context).findViewById(R.id.RemoveBudgetItemButton);
-            FloatingActionButton editButton = ((Activity)context).findViewById(R.id.EditBudgetItemButton);
+            final FloatingActionButton removeButton = ((Activity)context).findViewById(R.id.RemoveBudgetItemButton);
+            final FloatingActionButton editButton = ((Activity)context).findViewById(R.id.EditBudgetItemButton);
 
             if (clickListener != null) {
                 clickListener.onItemClick(view, getAdapterPosition());
