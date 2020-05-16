@@ -1,10 +1,12 @@
 package com.example.personalbudget;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -31,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
         final ViewPager viewPager = (ViewPager)findViewById(R.id.viewPager);
         viewPager.setAdapter(tabsAdapter);
-        viewPager.setOffscreenPageLimit(4);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -41,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                RecyclerView budgetRecyclerView = findViewById(R.id.budgetRecyclerView);
+                Fragment currentFragment = tabsAdapter.getItem(tab.getPosition());
+                RecyclerView budgetRecyclerView = currentFragment.getView().findViewById(R.id.budgetRecyclerView);
                 BudgetRecyclerViewAdapter budgetRecyclerViewAdapter = (BudgetRecyclerViewAdapter) budgetRecyclerView.getAdapter();
                 budgetRecyclerViewAdapter.UnselectItem();
             }
