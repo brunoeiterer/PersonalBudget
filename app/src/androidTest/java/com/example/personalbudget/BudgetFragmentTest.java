@@ -1,6 +1,5 @@
 package com.example.personalbudget;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.uiautomator.UiDevice;
@@ -26,6 +25,8 @@ import androidx.test.espresso.contrib.RecyclerViewActions;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 
 public class BudgetFragmentTest {
     @Rule
@@ -100,5 +101,38 @@ public class BudgetFragmentTest {
                 (allOf(hasDescendant(withText(date)), hasDescendant(withText(containsString(value))))));
         onView(allOf(withId(R.id.budgetRecyclerView), isDisplayed())).check(matches(allOf(hasDescendant(withText(date)),
                 hasDescendant(withText(containsString(value))))));
+    }
+
+    @Test
+    public void RemoveBudgetItemTest() {
+        /* click on AddBudgetItemButton to display the AddBudgetWindow */
+        onView(allOf(withId(R.id.AddBudgetItemButton), isDisplayed())).perform(click());
+
+        /* write date to addBudgetItemWindowDateEditText */
+        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        onView(withId(R.id.addBudgetItemWindowDateEditText)).perform(typeText(date));
+
+        /* write value to */
+        Random random = new Random();
+        DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setMaximumFractionDigits(2);
+        String value = decimalFormat.format(random.nextFloat() * 500);
+        onView(withId(R.id.addBudgetItemWindowValueEditText)).perform(typeText(value));
+
+        /* click on addBudgetItemWindowDoneButton */
+        onView(allOf(withId(R.id.addBudgetItemWindowDoneButton), isDisplayed())).perform(click());
+
+        /* select the added budgetItem */
+        onView(allOf(withId(R.id.budgetRecyclerView), isDisplayed())).perform(RecyclerViewActions.scrollTo
+                (allOf(hasDescendant(withText(date)), hasDescendant(withText(containsString(value))))));
+        onView(allOf(withId(R.id.budgetRecyclerView), isDisplayed())).perform(RecyclerViewActions.actionOnItem(allOf(hasDescendant(withText(date)),
+                hasDescendant(withText(containsString(value)))), click()));
+
+        /* click on the remove button */
+        onView(allOf(withId(R.id.RemoveBudgetItemButton), isDisplayed())).perform(click());
+
+        /* check if budgetItem was removed */
+        onView(allOf(withId(R.id.budgetRecyclerView), isDisplayed())).check(matches(not(allOf(hasDescendant(withText(date)),
+                hasDescendant(withText(containsString(value)))))));
     }
 }
