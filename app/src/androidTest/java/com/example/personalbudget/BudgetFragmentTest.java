@@ -46,4 +46,21 @@ public class BudgetFragmentTest {
         onView(withId(R.id.addBudgetItemWindowDoneButton)).check(doesNotExist());
         onView(withId(R.id.addBudgetItemWindowCancelButton)).check(doesNotExist());
     }
+
+    @Test
+    public void AddBudgetWindowCancelTest() {
+        /* click on AddBudgetItemButton to display the AddBudgetWindow */
+        onView(allOf(withId(R.id.AddBudgetItemButton), isDisplayed())).perform(click());
+
+        /* click on the addBudgetItemWindowCancelButton to dismiss the AddBudgetWindow */
+        onView(withId(R.id.addBudgetItemWindowCancelButton)).perform(click());
+
+        /* check if all the views in AddBudgetWindow are gone */
+        onView(withId(R.id.addBudgetItemWindowDateTextView)).check(doesNotExist());
+        onView(withId(R.id.addBudgetItemWindowDateEditText)).check(doesNotExist());
+        onView(withId(R.id.addBudgetItemWindowValueTextView)).check(doesNotExist());
+        onView(withId(R.id.addBudgetItemWindowValueEditText)).check(doesNotExist());
+        onView(withId(R.id.addBudgetItemWindowDoneButton)).check(doesNotExist());
+        onView(withId(R.id.addBudgetItemWindowCancelButton)).check(doesNotExist());
+    }
 }
