@@ -91,7 +91,7 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         totalValueTextView.setText(this.budgetData.getBudgetDataCurrency().getSymbol() + ' ' +
                 decimalFormat.format(this.budgetData.getTotalValue()));
 
-        TabLayout tabLayout = this.fragment.getView().findViewById(R.id.tabLayout);
+        TabLayout tabLayout = this.fragment.getActivity().findViewById(R.id.tabLayout);
         TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
         try{
             BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(), this.budgetData);
