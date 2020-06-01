@@ -1,5 +1,6 @@
 package com.example.personalbudget;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -27,6 +28,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class BudgetFragment extends Fragment {
     @Override
@@ -81,14 +83,23 @@ public class BudgetFragment extends Fragment {
                     public void onClick(View view) {
                         EditText dateEditText = popupView.findViewById(R.id.addBudgetItemWindowDateEditText);
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                        LocalDate date = LocalDate.parse(dateEditText.getText(), formatter);
+                        LocalDate date;
+                        try {
+                            date = LocalDate.parse(dateEditText.getText(), formatter);
 
-                        EditText valueEditText = popupView.findViewById(R.id.addBudgetItemWindowValueEditText);
-                        BigDecimal value = new BigDecimal(valueEditText.getText().toString());
+                            EditText valueEditText = popupView.findViewById(R.id.addBudgetItemWindowValueEditText);
+                            BigDecimal value = new BigDecimal(valueEditText.getText().toString());
 
-                        addBudgetItem(date, value, budgetRecyclerViewAdapter);
+                            addBudgetItem(date, value, budgetRecyclerViewAdapter);
 
-                        popupWindow.dismiss();
+                            popupWindow.dismiss();
+                        }
+                        catch(DateTimeParseException e) {
+                            new AlertDialog.Builder(getActivity())
+                                    .setTitle(R.string.add_budget_item_dialog_invalid_date_tile)
+                                    .setMessage(getString(R.string.add_budget_item_dialog_invalid_date_message))
+                                    .show();
+                        }
                     }
                 });
 
