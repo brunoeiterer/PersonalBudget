@@ -1,6 +1,7 @@
 package com.example.personalbudget;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -29,6 +30,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Currency;
 
 public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecyclerViewAdapter.ViewHolder> {
@@ -238,36 +240,47 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
                             doneButton.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    LocalDate date = LocalDate.parse(dateEditText.getText(), formatter);
-                                    BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
-                                            BudgetRecyclerViewAdapter.this.selectedPosition).setDate(date);
+                                    LocalDate date;
+                                    try {
+                                        date = LocalDate.parse(dateEditText.getText(), formatter);
 
-                                    BigDecimal value = new BigDecimal(valueEditText.getText().toString());
-                                    BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
-                                            BudgetRecyclerViewAdapter.this.selectedPosition).setBudgetItemValue(value);
+                                        BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
+                                                BudgetRecyclerViewAdapter.this.selectedPosition).setDate(date);
 
-                                    BudgetRecyclerViewAdapter.this.notifyDataSetChanged();
+                                        BigDecimal value = new BigDecimal(valueEditText.getText().toString());
+                                        BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
+                                                BudgetRecyclerViewAdapter.this.selectedPosition).setBudgetItemValue(value);
 
-                                    TextView totalValueTextView = BudgetRecyclerViewAdapter.this.fragment.getView().
-                                            findViewById(R.id.totalValueTextView);
-                                    DecimalFormat decimalFormat = new DecimalFormat();
-                                    decimalFormat.setMinimumFractionDigits(2);
-                                    decimalFormat.setMaximumFractionDigits(2);
-                                    decimalFormat.setGroupingUsed(false);
-                                    totalValueTextView.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetDataCurrency().getSymbol() +
-                                            ' ' + decimalFormat.format(BudgetRecyclerViewAdapter.this.budgetData.getTotalValue()));
+                                        BudgetRecyclerViewAdapter.this.notifyDataSetChanged();
 
-                                    TabLayout tabLayout = BudgetRecyclerViewAdapter.this.fragment.getActivity().findViewById(R.id.tabLayout);
-                                    TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
-                                    try{
-                                        BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(),
-                                                BudgetRecyclerViewAdapter.this.budgetData);
+                                        TextView totalValueTextView = BudgetRecyclerViewAdapter.this.fragment.getView().
+                                                findViewById(R.id.totalValueTextView);
+                                        DecimalFormat decimalFormat = new DecimalFormat();
+                                        decimalFormat.setMinimumFractionDigits(2);
+                                        decimalFormat.setMaximumFractionDigits(2);
+                                        decimalFormat.setGroupingUsed(false);
+                                        totalValueTextView.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetDataCurrency().getSymbol() +
+                                                ' ' + decimalFormat.format(BudgetRecyclerViewAdapter.this.budgetData.getTotalValue()));
+
+                                        TabLayout tabLayout = BudgetRecyclerViewAdapter.this.fragment.getActivity().findViewById(R.id.tabLayout);
+                                        TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
+                                        try{
+                                            BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(),
+                                                    BudgetRecyclerViewAdapter.this.budgetData);
+                                        }
+                                        catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                        popupWindow.dismiss();
                                     }
-                                    catch (IOException e) {
-                                        e.printStackTrace();
+                                    catch(DateTimeParseException e) {
+                                        new AlertDialog.Builder(BudgetRecyclerViewAdapter.this.fragment.getActivity())
+                                                .setTitle(R.string.add_budget_item_dialog_invalid_date_tile)
+                                                .setMessage(BudgetRecyclerViewAdapter.this.fragment.
+                                                        getString(R.string.add_budget_item_dialog_invalid_date_message))
+                                                .show();
                                     }
-
-                                    popupWindow.dismiss();
                                 }
                             });
 
