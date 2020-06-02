@@ -110,6 +110,8 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         this.budgetData.removeBudgetItem(budgetItem);
         this.budgetData.sortByDate();
 
+        this.UnselectItem();
+
         TextView totalValueTextView = this.fragment.getView().findViewById(R.id.totalValueTextView);
         DecimalFormat decimalFormat = new DecimalFormat();
         decimalFormat.setMinimumFractionDigits(2);
