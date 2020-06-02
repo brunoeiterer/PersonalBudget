@@ -9,6 +9,4 @@
     <string name="add_budget_item_window_value">value</string>
     <string name="add_budget_item_window_done_button">done</string>
     <string name="add_budget_item_window_cancel_button">cancel</string>
-    <string name="add_budget_item_dialog_invalid_date_tile">Invalid Date</string>
-    <string name="add_budget_item_dialog_invalid_date_message">The input is not a valid date.</string>
 </resources>

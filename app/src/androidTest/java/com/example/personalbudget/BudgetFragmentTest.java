@@ -218,43 +218,4 @@ public class BudgetFragmentTest {
         onView(allOf(withId(R.id.budgetRecyclerView), isDisplayed())).check(matches(allOf(hasDescendant(withText(newDate)),
                 hasDescendant(withText(containsString(newValue))))));
     }
-
-    @Test
-    public void EditBudgetItemInvalidDateTest() {
-        /* click on AddBudgetItemButton to display the AddBudgetWindow */
-        onView(allOf(withId(R.id.AddBudgetItemButton), isDisplayed())).perform(click());
-
-        /* write date to addBudgetItemWindowDateEditText */
-        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        onView(withId(R.id.addBudgetItemWindowDateEditText)).perform(typeText(date));
-
-        /* write value to addBudgetItemWindowValueEditText */
-        Random random = new Random();
-        DecimalFormat decimalFormat = new DecimalFormat();
-        decimalFormat.setMaximumFractionDigits(2);
-        String value = decimalFormat.format(random.nextFloat() * 500);
-        onView(withId(R.id.addBudgetItemWindowValueEditText)).perform(typeText(value));
-
-        /* click on addBudgetItemWindowDoneButton */
-        onView(allOf(withId(R.id.addBudgetItemWindowDoneButton), isDisplayed())).perform(click());
-
-        /* select the added budgetItem */
-        onView(allOf(withId(R.id.budgetRecyclerView), isDisplayed())).perform(RecyclerViewActions.scrollTo
-                (allOf(hasDescendant(withText(date)), hasDescendant(withText(containsString(value))))));
-        onView(allOf(withId(R.id.budgetRecyclerView), isDisplayed())).perform(RecyclerViewActions.actionOnItem(allOf(hasDescendant(withText(date)),
-                hasDescendant(withText(containsString(value)))), click()));
-
-        /* click on the EditBudgetItemButton */
-        onView(allOf(withId(R.id.EditBudgetItemButton), isDisplayed())).perform(click());
-
-        /* write new date to addBudgetItemWindowDateEditText */
-        String newDate = "Invalid Date";
-        onView(withId(R.id.addBudgetItemWindowDateEditText)).perform(clearText(), typeText(newDate));
-
-        /* click on addBudgetItemWindowDoneButton */
-        onView(allOf(withId(R.id.addBudgetItemWindowDoneButton), isDisplayed())).perform(click());
-
-        /* check if the error dialogue is displayed */
-        onView(withText(R.string.add_budget_item_dialog_invalid_date_message)).check(matches(isDisplayed()));
-    }
 }

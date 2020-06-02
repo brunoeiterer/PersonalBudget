@@ -259,47 +259,37 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
                             doneButton.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    LocalDate date;
-                                    try {
-                                        date = LocalDate.parse(dateEditText.getText(), formatter);
+                                    LocalDate date = LocalDate.parse(dateEditText.getText(), formatter);
 
-                                        BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
-                                                BudgetRecyclerViewAdapter.this.selectedPosition).setDate(date);
+                                    BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
+                                            BudgetRecyclerViewAdapter.this.selectedPosition).setDate(date);
 
-                                        BigDecimal value = new BigDecimal(valueEditText.getText().toString());
-                                        BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
-                                                BudgetRecyclerViewAdapter.this.selectedPosition).setBudgetItemValue(value);
+                                    BigDecimal value = new BigDecimal(valueEditText.getText().toString());
+                                    BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
+                                            BudgetRecyclerViewAdapter.this.selectedPosition).setBudgetItemValue(value);
 
-                                        BudgetRecyclerViewAdapter.this.notifyDataSetChanged();
+                                    BudgetRecyclerViewAdapter.this.notifyDataSetChanged();
 
-                                        TextView totalValueTextView = BudgetRecyclerViewAdapter.this.fragment.getView().
-                                                findViewById(R.id.totalValueTextView);
-                                        DecimalFormat decimalFormat = new DecimalFormat();
-                                        decimalFormat.setMinimumFractionDigits(2);
-                                        decimalFormat.setMaximumFractionDigits(2);
-                                        decimalFormat.setGroupingUsed(false);
-                                        totalValueTextView.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetDataCurrency().getSymbol() +
-                                                ' ' + decimalFormat.format(BudgetRecyclerViewAdapter.this.budgetData.getTotalValue()));
+                                    TextView totalValueTextView = BudgetRecyclerViewAdapter.this.fragment.getView().
+                                            findViewById(R.id.totalValueTextView);
+                                    DecimalFormat decimalFormat = new DecimalFormat();
+                                    decimalFormat.setMinimumFractionDigits(2);
+                                    decimalFormat.setMaximumFractionDigits(2);
+                                    decimalFormat.setGroupingUsed(false);
+                                    totalValueTextView.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetDataCurrency().getSymbol() +
+                                            ' ' + decimalFormat.format(BudgetRecyclerViewAdapter.this.budgetData.getTotalValue()));
 
-                                        TabLayout tabLayout = BudgetRecyclerViewAdapter.this.fragment.getActivity().findViewById(R.id.tabLayout);
-                                        TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
-                                        try{
-                                            BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(),
-                                                    BudgetRecyclerViewAdapter.this.budgetData);
-                                        }
-                                        catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-
-                                        popupWindow.dismiss();
+                                    TabLayout tabLayout = BudgetRecyclerViewAdapter.this.fragment.getActivity().findViewById(R.id.tabLayout);
+                                    TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
+                                    try{
+                                        BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(),
+                                                BudgetRecyclerViewAdapter.this.budgetData);
                                     }
-                                    catch(DateTimeParseException e) {
-                                        new AlertDialog.Builder(BudgetRecyclerViewAdapter.this.fragment.getActivity())
-                                                .setTitle(R.string.add_budget_item_dialog_invalid_date_tile)
-                                                .setMessage(BudgetRecyclerViewAdapter.this.fragment.
-                                                        getString(R.string.add_budget_item_dialog_invalid_date_message))
-                                                .show();
+                                    catch (IOException e) {
+                                        e.printStackTrace();
                                     }
+
+                                    popupWindow.dismiss();
                                 }
                             });
 
