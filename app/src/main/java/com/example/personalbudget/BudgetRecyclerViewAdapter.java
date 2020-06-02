@@ -239,6 +239,10 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
                                 public void onClick(View view) {
                                     DatePickerDialog datePickerDialog =
                                             new DatePickerDialog(BudgetRecyclerViewAdapter.this.fragment.getActivity());
+                                    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                                    LocalDate date = LocalDate.parse(dateEditText.getText().toString(), dateTimeFormatter);
+                                    datePickerDialog.getDatePicker().init(
+                                            date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), null);
                                     datePickerDialog.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
                                         @Override
                                         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
