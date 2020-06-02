@@ -1,6 +1,7 @@
 package com.example.personalbudget;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -74,6 +76,23 @@ public class BudgetFragment extends Fragment {
                     public boolean onTouch(View view, MotionEvent event) {
                         popupWindow.dismiss();
                         return true;
+                    }
+                });
+
+                EditText dateEditText = popupView.findViewById(R.id.addBudgetItemWindowDateEditText);
+                dateEditText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity());
+                        datePickerDialog.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                                /* add 1 to the month because they start at index 0 */
+                                dateEditText.setText(LocalDate.of(year, month + 1, dayOfMonth).format(formatter));
+                            }
+                        });
+                        datePickerDialog.show();
                     }
                 });
 

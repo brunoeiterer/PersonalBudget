@@ -1,9 +1,13 @@
 package com.example.personalbudget;
 
+import android.widget.DatePicker;
+
+import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.uiautomator.UiDevice;
 
+import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -21,6 +25,7 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -85,9 +90,16 @@ public class BudgetFragmentTest {
         /* click on AddBudgetItemButton to display the AddBudgetWindow */
         onView(allOf(withId(R.id.AddBudgetItemButton), isDisplayed())).perform(click());
 
-        /* write date to addBudgetItemWindowDateEditText */
-        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        onView(withId(R.id.addBudgetItemWindowDateEditText)).perform(typeText(date));
+        /* pick date in addBudgetItemWindowDateEditText */
+        onView(withId(R.id.addBudgetItemWindowDateEditText)).perform(click());
+        int year = LocalDate.now().getYear();
+        int monthOfYear = LocalDate.now().getMonthValue();
+        int dayOfMonth = LocalDate.now().getDayOfMonth();
+        onView(allOf(withClassName(Matchers.equalTo(DatePicker.class.getName())), isDisplayed())).
+                perform(PickerActions.setDate(year, monthOfYear, dayOfMonth));
+
+        /* click ok button in the datePicker */
+        onView(withId(android.R.id.button1)).perform(click());
 
         /* write value to addBudgetItemWindowValueEditText */
         Random random = new Random();
@@ -100,6 +112,8 @@ public class BudgetFragmentTest {
         onView(allOf(withId(R.id.addBudgetItemWindowDoneButton), isDisplayed())).perform(click());
 
         /* check if the added item is displayed */
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String date = LocalDate.now().format(dateTimeFormatter);
         onView(allOf(withId(R.id.budgetRecyclerView), isDisplayed())).perform(RecyclerViewActions.scrollTo
                 (allOf(hasDescendant(withText(date)), hasDescendant(withText(containsString(value))))));
         onView(allOf(withId(R.id.budgetRecyclerView), isDisplayed())).check(matches(allOf(hasDescendant(withText(date)),
