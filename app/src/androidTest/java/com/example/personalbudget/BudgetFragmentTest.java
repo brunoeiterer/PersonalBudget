@@ -121,22 +121,6 @@ public class BudgetFragmentTest {
     }
 
     @Test
-    public void AddBudgetItemInvalidDateTest() {
-        /* click on AddBudgetItemButton to display the AddBudgetWindow */
-        onView(allOf(withId(R.id.AddBudgetItemButton), isDisplayed())).perform(click());
-
-        /* write date to addBudgetItemWindowDateEditText */
-        String date = "Invalid Date";
-        onView(withId(R.id.addBudgetItemWindowDateEditText)).perform(typeText(date));
-
-        /* click on addBudgetItemWindowDoneButton */
-        onView(allOf(withId(R.id.addBudgetItemWindowDoneButton), isDisplayed())).perform(click());
-
-        /* check if the error dialogue is displayed */
-        onView(withText(R.string.add_budget_item_dialog_invalid_date_message)).check(matches(isDisplayed()));
-    }
-
-    @Test
     public void RemoveBudgetItemTest() {
         /* click on AddBudgetItemButton to display the AddBudgetWindow */
         onView(allOf(withId(R.id.AddBudgetItemButton), isDisplayed())).perform(click());
