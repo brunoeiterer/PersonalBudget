@@ -2,6 +2,7 @@ package com.example.personalbudget;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -231,6 +233,23 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                             dateEditText.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
                                     BudgetRecyclerViewAdapter.this.selectedPosition).getDate().format(formatter));
+
+                            dateEditText.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    DatePickerDialog datePickerDialog =
+                                            new DatePickerDialog(BudgetRecyclerViewAdapter.this.fragment.getActivity());
+                                    datePickerDialog.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
+                                        @Override
+                                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                                            /* add 1 to the month because they start at index 0 */
+                                            dateEditText.setText(LocalDate.of(year, month + 1, dayOfMonth).format(formatter));
+                                        }
+                                    });
+                                    datePickerDialog.show();
+                                }
+                            });
 
                             EditText valueEditText = popupView.findViewById(R.id.addBudgetItemWindowValueEditText);
                             valueEditText.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
