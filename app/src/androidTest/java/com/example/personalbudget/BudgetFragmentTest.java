@@ -2,6 +2,7 @@ package com.example.personalbudget;
 
 import android.widget.DatePicker;
 
+import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
@@ -30,8 +31,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
@@ -160,6 +163,12 @@ public class BudgetFragmentTest {
         /* check if budgetItem was removed */
         onView(allOf(withId(R.id.budgetRecyclerView), isDisplayed())).check(matches(not(allOf(hasDescendant(withText(date)),
                 hasDescendant(withText(containsString(value)))))));
+
+        /* check if budgetItem was unselected */
+        onView(allOf(withId(R.id.EditBudgetItemButton), withParent(allOf(withId(R.id.budgetConstraintLayout), isDisplayed()))))
+                .check(matches(not(isDisplayed())));
+        onView(allOf(withId(R.id.RemoveBudgetItemButton), withParent(allOf(withId(R.id.budgetConstraintLayout), isDisplayed()))))
+                .check(matches(not(isDisplayed())));
     }
 
     @Test
