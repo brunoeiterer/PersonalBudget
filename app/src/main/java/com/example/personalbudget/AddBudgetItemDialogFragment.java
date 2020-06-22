@@ -2,6 +2,8 @@ package com.example.personalbudget;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -60,6 +62,30 @@ public class AddBudgetItemDialogFragment extends DialogFragment {
             }
         });
 
+        EditText valueEditText = view.findViewById(R.id.addBudgetItemWindowValueEditText);
+
+        InputFilter twoDecimalPlacesFilter = new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                if(dest.length() > 3 && dest.charAt(dest.length() - 3) == '.') {
+                    return "";
+                }
+                return null;
+            }
+        };
+
+        InputFilter mandatoryNumberBeforePointFilter = new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                if(dest.length() == 0 && source.charAt(0) == '.') {
+                    return "";
+                }
+                return null;
+            }
+        };
+
+        valueEditText.setFilters(new InputFilter[] {twoDecimalPlacesFilter, mandatoryNumberBeforePointFilter});
+
         Button doneButton = view.findViewById(R.id.addBudgetItemWindowDoneButton);
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +93,6 @@ public class AddBudgetItemDialogFragment extends DialogFragment {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 LocalDate date = LocalDate.parse(dateEditText.getText(), formatter);
 
-                EditText valueEditText = view.findViewById(R.id.addBudgetItemWindowValueEditText);
                 BigDecimal value = new BigDecimal(valueEditText.getText().toString());
 
                 AddBudgetItemDialogFragment.this.addBudgetItem(date, value, budgetRecyclerViewAdapter);
