@@ -38,7 +38,7 @@ public class BudgetFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                AddBudgetItemDialogFragment addBudgetItemDialogFragment = new AddBudgetItemDialogFragment(budgetRecyclerViewAdapter);
+                AddBudgetItemDialogFragment addBudgetItemDialogFragment = new AddBudgetItemDialogFragment(budgetRecyclerViewAdapter, true);
 
                 addBudgetItemDialogFragment.show(BudgetFragment.this.getActivity().getSupportFragmentManager() , null);
                 BudgetFragment.this.getActivity().getSupportFragmentManager().executePendingTransactions();

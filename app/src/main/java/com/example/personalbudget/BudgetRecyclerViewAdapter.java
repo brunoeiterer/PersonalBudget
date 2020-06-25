@@ -131,6 +131,30 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         }
     }
 
+    public void editBudgetItem(LocalDate newDate, BigDecimal newValue) {
+        this.budgetData.getBudgetItem(this.selectedPosition).setDate(newDate);
+        this.budgetData.getBudgetItem(this.selectedPosition).setBudgetItemValue(newValue);
+        this.budgetData.sortByDate();
+        notifyDataSetChanged();
+
+        TextView totalValueTextView = this.fragment.getView().findViewById(R.id.totalValueTextView);
+        DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setMinimumFractionDigits(2);
+        decimalFormat.setMaximumFractionDigits(2);
+        decimalFormat.setGroupingUsed(false);
+        totalValueTextView.setText(this.budgetData.getBudgetDataCurrency().getSymbol() + ' ' +
+                decimalFormat.format(this.budgetData.getTotalValue()));
+
+        TabLayout tabLayout = this.fragment.getActivity().findViewById(R.id.tabLayout);
+        TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
+        try{
+            BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(), this.budgetData);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void UnselectItem() {
         this.selectedPosition = RecyclerView.NO_POSITION;
 
@@ -208,7 +232,11 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
                         public void onClick(View view) {
                             /* show popup window */
                             AddBudgetItemDialogFragment addBudgetItemDialogFragment =
-                                    new AddBudgetItemDialogFragment(BudgetRecyclerViewAdapter.this);
+                                    new AddBudgetItemDialogFragment(
+                                            BudgetRecyclerViewAdapter.this,
+                                            BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(selectedPosition).getDate(),
+                                            BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(selectedPosition).getBudgetItemValue(),
+                                            false);
 
                             addBudgetItemDialogFragment.show(
                                     BudgetRecyclerViewAdapter.this.fragment.getActivity().getSupportFragmentManager() , null);
@@ -219,6 +247,8 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
                             layoutParams.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
                             layoutParams.dimAmount = 0.5f;
                             window.setAttributes(layoutParams);
+
+
                         }
                     });
                 }

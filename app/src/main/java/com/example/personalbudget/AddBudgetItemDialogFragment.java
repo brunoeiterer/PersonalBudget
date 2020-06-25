@@ -16,16 +16,31 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class AddBudgetItemDialogFragment extends DialogFragment {
 
     private BudgetRecyclerViewAdapter budgetRecyclerViewAdapter;
+    private LocalDate date;
+    private BigDecimal value;
+    private boolean isAddingBudgetItem;
 
-    public AddBudgetItemDialogFragment(BudgetRecyclerViewAdapter budgetRecyclerViewAdapter) {
+    public AddBudgetItemDialogFragment(BudgetRecyclerViewAdapter budgetRecyclerViewAdapter, boolean isAddingBudgetItem) {
         super();
         this.budgetRecyclerViewAdapter = budgetRecyclerViewAdapter;
+        this.date = null;
+        this.value = null;
+        this.isAddingBudgetItem = isAddingBudgetItem;
+    }
+
+    public AddBudgetItemDialogFragment(BudgetRecyclerViewAdapter budgetRecyclerViewAdapter, LocalDate date, BigDecimal value, boolean isAddingBudgetItem) {
+        super();
+        this.budgetRecyclerViewAdapter = budgetRecyclerViewAdapter;
+        this.date = date;
+        this.value = value;
+        this.isAddingBudgetItem = isAddingBudgetItem;
     }
 
     @Override
@@ -46,6 +61,13 @@ public class AddBudgetItemDialogFragment extends DialogFragment {
         });
 
         EditText dateEditText = view.findViewById(R.id.addBudgetItemWindowDateEditText);
+        if(this.date != null) {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            dateEditText.setText(this.date.format(dateTimeFormatter));
+        }
+        int year = this.date != null ? this.date.getYear() : LocalDate.now().getYear();
+        int month = this.date != null ? this.date.getMonthValue() : LocalDate.now().getMonthValue();
+        int day = this.date != null ? this.date.getDayOfMonth() : LocalDate.now().getDayOfMonth();
         dateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View onClickListener) {
@@ -57,12 +79,19 @@ public class AddBudgetItemDialogFragment extends DialogFragment {
                         /* add 1 to the month because they start at index 0 */
                         dateEditText.setText(LocalDate.of(year, month + 1, dayOfMonth).format(formatter));
                     }
-                }, 2000, 10, 5);
+                }, year, month, day);
                 datePickerDialog.show();
             }
         });
 
         EditText valueEditText = view.findViewById(R.id.addBudgetItemWindowValueEditText);
+        if(this.value != null) {
+            DecimalFormat decimalFormat = new DecimalFormat();
+            decimalFormat.setMinimumFractionDigits(2);
+            decimalFormat.setMaximumFractionDigits(2);
+            decimalFormat.setGroupingUsed(false);
+            valueEditText.setText(decimalFormat.format(this.value));
+        }
 
         InputFilter twoDecimalPlacesFilter = new InputFilter() {
             @Override
@@ -77,7 +106,7 @@ public class AddBudgetItemDialogFragment extends DialogFragment {
         InputFilter mandatoryNumberBeforePointFilter = new InputFilter() {
             @Override
             public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-                if(dest.length() == 0 && source.charAt(0) == '.') {
+                if(dest.length() == 0 && source.length() > 0 && source.charAt(0) == '.') {
                     return "";
                 }
                 return null;
@@ -95,8 +124,12 @@ public class AddBudgetItemDialogFragment extends DialogFragment {
 
                 BigDecimal value = new BigDecimal(valueEditText.getText().toString());
 
-                AddBudgetItemDialogFragment.this.addBudgetItem(date, value, budgetRecyclerViewAdapter);
-
+                if(AddBudgetItemDialogFragment.this.isAddingBudgetItem == true) {
+                    AddBudgetItemDialogFragment.this.addBudgetItem(date, value, budgetRecyclerViewAdapter);
+                }
+                else {
+                    AddBudgetItemDialogFragment.this.editBudgetItem(date, value, budgetRecyclerViewAdapter);
+                }
                 AddBudgetItemDialogFragment.this.dismiss();
             }
         });
@@ -116,4 +149,7 @@ public class AddBudgetItemDialogFragment extends DialogFragment {
         budgetRecyclerViewAdapter.notifyDataSetChanged();
     }
 
+    private void editBudgetItem(LocalDate date, BigDecimal value, BudgetRecyclerViewAdapter budgetRecyclerViewAdapter) {
+        budgetRecyclerViewAdapter.editBudgetItem(date, value);
+    }
 }
