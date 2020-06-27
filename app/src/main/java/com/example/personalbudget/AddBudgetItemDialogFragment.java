@@ -108,7 +108,7 @@ public class AddBudgetItemDialogFragment extends DialogFragment {
             @Override
             public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
                 if(dest.length() == 0 && source.length() > 0 && source.charAt(0) == '.') {
-                    return "0.";
+                    return "0" + source;
                 }
                 return null;
             }
