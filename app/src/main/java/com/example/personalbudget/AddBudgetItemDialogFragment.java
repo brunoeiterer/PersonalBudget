@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -107,7 +108,7 @@ public class AddBudgetItemDialogFragment extends DialogFragment {
             @Override
             public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
                 if(dest.length() == 0 && source.length() > 0 && source.charAt(0) == '.') {
-                    return "";
+                    return "0.";
                 }
                 return null;
             }
