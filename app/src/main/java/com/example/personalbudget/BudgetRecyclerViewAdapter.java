@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -130,6 +131,30 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         }
     }
 
+    public void editBudgetItem(LocalDate newDate, BigDecimal newValue) {
+        this.budgetData.getBudgetItem(this.selectedPosition).setDate(newDate);
+        this.budgetData.getBudgetItem(this.selectedPosition).setBudgetItemValue(newValue);
+        this.budgetData.sortByDate();
+        notifyDataSetChanged();
+
+        TextView totalValueTextView = this.fragment.getView().findViewById(R.id.totalValueTextView);
+        DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setMinimumFractionDigits(2);
+        decimalFormat.setMaximumFractionDigits(2);
+        decimalFormat.setGroupingUsed(false);
+        totalValueTextView.setText(this.budgetData.getBudgetDataCurrency().getSymbol() + ' ' +
+                decimalFormat.format(this.budgetData.getTotalValue()));
+
+        TabLayout tabLayout = this.fragment.getActivity().findViewById(R.id.tabLayout);
+        TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
+        try{
+            BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(), this.budgetData);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void UnselectItem() {
         this.selectedPosition = RecyclerView.NO_POSITION;
 
@@ -206,106 +231,24 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
                         @Override
                         public void onClick(View view) {
                             /* show popup window */
-                            final View popupView = layoutInflater.inflate(R.layout.add_budget_item_window, null);
-                            int width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
-                            int height = ConstraintLayout.LayoutParams.WRAP_CONTENT;
-                            final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
-                            popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+                            AddBudgetItemDialogFragment addBudgetItemDialogFragment =
+                                    new AddBudgetItemDialogFragment(
+                                            BudgetRecyclerViewAdapter.this,
+                                            BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(selectedPosition).getDate(),
+                                            BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(selectedPosition).getBudgetItemValue(),
+                                            false);
 
-                            popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+                            addBudgetItemDialogFragment.show(
+                                    BudgetRecyclerViewAdapter.this.fragment.getActivity().getSupportFragmentManager() , null);
+                            BudgetRecyclerViewAdapter.this.fragment.getActivity().getSupportFragmentManager().executePendingTransactions();
 
-                            View container = popupWindow.getContentView().getRootView();
-                            Context context = popupWindow.getContentView().getContext();
-                            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-                            WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) container.getLayoutParams();
+                            Window window = addBudgetItemDialogFragment.getDialog().getWindow();
+                            WindowManager.LayoutParams layoutParams = window.getAttributes();
                             layoutParams.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
                             layoutParams.dimAmount = 0.5f;
-                            windowManager.updateViewLayout(container, layoutParams);
+                            window.setAttributes(layoutParams);
 
-                            /* dismiss if user touches outside of the window */
-                            popupView.setOnTouchListener(new View.OnTouchListener() {
-                                @Override
-                                public boolean onTouch(View view, MotionEvent event) {
-                                    popupWindow.dismiss();
-                                    return true;
-                                }
-                            });
 
-                            EditText dateEditText = popupView.findViewById(R.id.addBudgetItemWindowDateEditText);
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                            dateEditText.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
-                                    BudgetRecyclerViewAdapter.this.selectedPosition).getDate().format(formatter));
-
-                            dateEditText.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    DatePickerDialog datePickerDialog =
-                                            new DatePickerDialog(BudgetRecyclerViewAdapter.this.fragment.getActivity());
-                                    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                                    LocalDate date = LocalDate.parse(dateEditText.getText().toString(), dateTimeFormatter);
-                                    datePickerDialog.getDatePicker().init(
-                                            date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), null);
-                                    datePickerDialog.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
-                                        @Override
-                                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                                            /* add 1 to the month because they start at index 0 */
-                                            dateEditText.setText(LocalDate.of(year, month + 1, dayOfMonth).format(formatter));
-                                        }
-                                    });
-                                    datePickerDialog.show();
-                                }
-                            });
-
-                            EditText valueEditText = popupView.findViewById(R.id.addBudgetItemWindowValueEditText);
-                            valueEditText.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
-                                    BudgetRecyclerViewAdapter.this.selectedPosition).getBudgetItemValue().toString());
-
-                            Button doneButton = popupView.findViewById(R.id.addBudgetItemWindowDoneButton);
-                            doneButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    LocalDate date = LocalDate.parse(dateEditText.getText(), formatter);
-
-                                    BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
-                                            BudgetRecyclerViewAdapter.this.selectedPosition).setDate(date);
-
-                                    BigDecimal value = new BigDecimal(valueEditText.getText().toString());
-                                    BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
-                                            BudgetRecyclerViewAdapter.this.selectedPosition).setBudgetItemValue(value);
-
-                                    BudgetRecyclerViewAdapter.this.notifyDataSetChanged();
-
-                                    TextView totalValueTextView = BudgetRecyclerViewAdapter.this.fragment.getView().
-                                            findViewById(R.id.totalValueTextView);
-                                    DecimalFormat decimalFormat = new DecimalFormat();
-                                    decimalFormat.setMinimumFractionDigits(2);
-                                    decimalFormat.setMaximumFractionDigits(2);
-                                    decimalFormat.setGroupingUsed(false);
-                                    totalValueTextView.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetDataCurrency().getSymbol() +
-                                            ' ' + decimalFormat.format(BudgetRecyclerViewAdapter.this.budgetData.getTotalValue()));
-
-                                    TabLayout tabLayout = BudgetRecyclerViewAdapter.this.fragment.getActivity().findViewById(R.id.tabLayout);
-                                    TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
-                                    try{
-                                        BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(),
-                                                BudgetRecyclerViewAdapter.this.budgetData);
-                                    }
-                                    catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                    popupWindow.dismiss();
-                                }
-                            });
-
-                            Button cancelButton = popupView.findViewById(R.id.addBudgetItemWindowCancelButton);
-                            cancelButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    popupWindow.dismiss();
-                                }
-                            });
                         }
                     });
                 }
