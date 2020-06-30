@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class AddBudgetItemDialogFragment extends DialogFragment {
 
@@ -121,17 +122,28 @@ public class AddBudgetItemDialogFragment extends DialogFragment {
             @Override
             public void onClick(View onClickListener) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                LocalDate date = LocalDate.parse(dateEditText.getText(), formatter);
+                LocalDate date;
+                BigDecimal value;
+                try {
+                    date = LocalDate.parse(dateEditText.getText(), formatter);
+                    value = new BigDecimal(valueEditText.getText().toString());
 
-                BigDecimal value = new BigDecimal(valueEditText.getText().toString());
+                    if(AddBudgetItemDialogFragment.this.isAddingBudgetItem == true) {
+                        AddBudgetItemDialogFragment.this.addBudgetItem(date, value, budgetRecyclerViewAdapter);
+                    }
+                    else {
+                        AddBudgetItemDialogFragment.this.editBudgetItem(date, value, budgetRecyclerViewAdapter);
+                    }
 
-                if(AddBudgetItemDialogFragment.this.isAddingBudgetItem == true) {
-                    AddBudgetItemDialogFragment.this.addBudgetItem(date, value, budgetRecyclerViewAdapter);
+                    AddBudgetItemDialogFragment.this.dismiss();
                 }
-                else {
-                    AddBudgetItemDialogFragment.this.editBudgetItem(date, value, budgetRecyclerViewAdapter);
+                catch (DateTimeParseException e) {
+                    Toast.makeText(AddBudgetItemDialogFragment.this.getActivity(), R.string.add_budget_item_invalid_date_toast, Toast.LENGTH_SHORT).show();
+
                 }
-                AddBudgetItemDialogFragment.this.dismiss();
+                catch (NumberFormatException e) {
+                    Toast.makeText(AddBudgetItemDialogFragment.this.getActivity(), R.string.add_budget_item_invalid_value_toast, Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
