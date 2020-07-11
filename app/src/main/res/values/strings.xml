@@ -9,4 +9,6 @@
     <string name="add_budget_item_window_value">value</string>
     <string name="add_budget_item_window_done_button">done</string>
     <string name="add_budget_item_window_cancel_button">cancel</string>
+    <string name="add_budget_item_invalid_date_toast">The date is invalid.</string>
+    <string name="add_budget_item_invalid_value_toast">The value is invalid.</string>
 </resources>

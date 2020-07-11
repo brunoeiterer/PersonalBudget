@@ -1,6 +1,8 @@
 package com.example.personalbudget;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -11,8 +13,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -29,6 +33,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Currency;
 
 public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecyclerViewAdapter.ViewHolder> {
@@ -91,7 +96,7 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         totalValueTextView.setText(this.budgetData.getBudgetDataCurrency().getSymbol() + ' ' +
                 decimalFormat.format(this.budgetData.getTotalValue()));
 
-        TabLayout tabLayout = this.fragment.getView().findViewById(R.id.tabLayout);
+        TabLayout tabLayout = this.fragment.getActivity().findViewById(R.id.tabLayout);
         TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
         try{
             BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(), this.budgetData);
@@ -106,6 +111,8 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         this.budgetData.removeBudgetItem(budgetItem);
         this.budgetData.sortByDate();
 
+        this.UnselectItem();
+
         TextView totalValueTextView = this.fragment.getView().findViewById(R.id.totalValueTextView);
         DecimalFormat decimalFormat = new DecimalFormat();
         decimalFormat.setMinimumFractionDigits(2);
@@ -114,7 +121,31 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
         totalValueTextView.setText(this.budgetData.getBudgetDataCurrency().getSymbol() + ' ' +
                 decimalFormat.format(this.budgetData.getTotalValue()));
 
-        TabLayout tabLayout = this.fragment.getView().findViewById(R.id.tabLayout);
+        TabLayout tabLayout = this.fragment.getActivity().findViewById(R.id.tabLayout);
+        TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
+        try{
+            BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(), this.budgetData);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void editBudgetItem(LocalDate newDate, BigDecimal newValue) {
+        this.budgetData.getBudgetItem(this.selectedPosition).setDate(newDate);
+        this.budgetData.getBudgetItem(this.selectedPosition).setBudgetItemValue(newValue);
+        this.budgetData.sortByDate();
+        notifyDataSetChanged();
+
+        TextView totalValueTextView = this.fragment.getView().findViewById(R.id.totalValueTextView);
+        DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setMinimumFractionDigits(2);
+        decimalFormat.setMaximumFractionDigits(2);
+        decimalFormat.setGroupingUsed(false);
+        totalValueTextView.setText(this.budgetData.getBudgetDataCurrency().getSymbol() + ' ' +
+                decimalFormat.format(this.budgetData.getTotalValue()));
+
+        TabLayout tabLayout = this.fragment.getActivity().findViewById(R.id.tabLayout);
         TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
         try{
             BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(), this.budgetData);
@@ -200,84 +231,24 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
                         @Override
                         public void onClick(View view) {
                             /* show popup window */
-                            final View popupView = layoutInflater.inflate(R.layout.add_budget_item_window, null);
-                            int width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
-                            int height = ConstraintLayout.LayoutParams.WRAP_CONTENT;
-                            final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
-                            popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+                            AddBudgetItemDialogFragment addBudgetItemDialogFragment =
+                                    new AddBudgetItemDialogFragment(
+                                            BudgetRecyclerViewAdapter.this,
+                                            BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(selectedPosition).getDate(),
+                                            BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(selectedPosition).getBudgetItemValue(),
+                                            false);
 
-                            popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+                            addBudgetItemDialogFragment.show(
+                                    BudgetRecyclerViewAdapter.this.fragment.getActivity().getSupportFragmentManager() , null);
+                            BudgetRecyclerViewAdapter.this.fragment.getActivity().getSupportFragmentManager().executePendingTransactions();
 
-                            View container = popupWindow.getContentView().getRootView();
-                            Context context = popupWindow.getContentView().getContext();
-                            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-                            WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) container.getLayoutParams();
+                            Window window = addBudgetItemDialogFragment.getDialog().getWindow();
+                            WindowManager.LayoutParams layoutParams = window.getAttributes();
                             layoutParams.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
                             layoutParams.dimAmount = 0.5f;
-                            windowManager.updateViewLayout(container, layoutParams);
+                            window.setAttributes(layoutParams);
 
-                            /* dismiss if user touches outside of the window */
-                            popupView.setOnTouchListener(new View.OnTouchListener() {
-                                @Override
-                                public boolean onTouch(View view, MotionEvent event) {
-                                    popupWindow.dismiss();
-                                    return true;
-                                }
-                            });
 
-                            EditText dateEditText = popupView.findViewById(R.id.addBudgetItemWindowDateEditText);
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                            dateEditText.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
-                                    BudgetRecyclerViewAdapter.this.selectedPosition).getDate().format(formatter));
-
-                            EditText valueEditText = popupView.findViewById(R.id.addBudgetItemWindowValueEditText);
-                            valueEditText.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
-                                    BudgetRecyclerViewAdapter.this.selectedPosition).getBudgetItemValue().toString());
-
-                            Button doneButton = popupView.findViewById(R.id.addBudgetItemWindowDoneButton);
-                            doneButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    LocalDate date = LocalDate.parse(dateEditText.getText(), formatter);
-                                    BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
-                                            BudgetRecyclerViewAdapter.this.selectedPosition).setDate(date);
-
-                                    BigDecimal value = new BigDecimal(valueEditText.getText().toString());
-                                    BudgetRecyclerViewAdapter.this.budgetData.getBudgetItem(
-                                            BudgetRecyclerViewAdapter.this.selectedPosition).setBudgetItemValue(value);
-
-                                    BudgetRecyclerViewAdapter.this.notifyDataSetChanged();
-
-                                    TextView totalValueTextView = BudgetRecyclerViewAdapter.this.fragment.getView().
-                                            findViewById(R.id.totalValueTextView);
-                                    DecimalFormat decimalFormat = new DecimalFormat();
-                                    decimalFormat.setMinimumFractionDigits(2);
-                                    decimalFormat.setMaximumFractionDigits(2);
-                                    decimalFormat.setGroupingUsed(false);
-                                    totalValueTextView.setText(BudgetRecyclerViewAdapter.this.budgetData.getBudgetDataCurrency().getSymbol() +
-                                            ' ' + decimalFormat.format(BudgetRecyclerViewAdapter.this.budgetData.getTotalValue()));
-
-                                    TabLayout tabLayout = BudgetRecyclerViewAdapter.this.fragment.getActivity().findViewById(R.id.tabLayout);
-                                    TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
-                                    try{
-                                        BudgetDataFileHandler.WriteBudgetDataToFile(tab.getText().toString(),
-                                                BudgetRecyclerViewAdapter.this.budgetData);
-                                    }
-                                    catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                    popupWindow.dismiss();
-                                }
-                            });
-
-                            Button cancelButton = popupView.findViewById(R.id.addBudgetItemWindowCancelButton);
-                            cancelButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    popupWindow.dismiss();
-                                }
-                            });
                         }
                     });
                 }

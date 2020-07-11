@@ -21,6 +21,8 @@
         android:ems="10"
         android:inputType="date"
         android:autofillHints=""
+        android:clickable="true"
+        android:focusable="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addBudgetItemWindowDateTextView" />
 
